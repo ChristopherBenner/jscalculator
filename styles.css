@@ -1,0 +1,26 @@
+.container {
+    background-color: blue;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    /*width: 250px;
+    height: 350px;*/
+    width: fit-content;
+    padding: 25px;
+}
+button {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+.operator {
+    color: white;
+    background-color: red;
+}
+
+.number {
+    color: blue;
+    font-weight: 700;
+}
