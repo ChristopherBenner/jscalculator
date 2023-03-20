@@ -1,7 +1,10 @@
 let enterClicked; // = true;
+let specialClicked;
+let formatError;
 let num1;
 let num2;
 let lastOperation = '';
+let memory = 0;
 // Check to see if a number has been chosen after selecting an operation
 let noNewNumber = true;
 const displayDigit = function(digit){
@@ -9,12 +12,15 @@ const displayDigit = function(digit){
         document.getElementById('display').textContent = '0';
     }
     let currentNumber = String(document.getElementById('display').textContent);
+    // Prevent from being able to add too many digits
+    if (currentNumber.length >= 10 || currentNumber.includes('-') && currentNumber.length >= 11){
+        return;
+    }
     // Only allow one decimal at a time
-    
     if (digit === '.' && currentNumber.includes(digit)){
         return;
     }
-    if (currentNumber === '0' || enterClicked){
+    if (currentNumber === '0' || enterClicked || specialClicked || formatError){
         // If '.' selected -> determine if a leading 0 should be added
         if (digit === '.' && currentNumber === '0'){
             currentNumber += String(digit);
@@ -29,6 +35,8 @@ const displayDigit = function(digit){
     }
     enterClicked = false;
     noNewNumber = false;
+    specialClicked = false;
+    formatError = false;
     document.getElementById('display').textContent = currentNumber;
 }
 
@@ -79,6 +87,7 @@ const operate = function(currentOperation){
 }
 
 const evaluate = function(num1, num2, lastOperation){
+    // This might have to change to include keystrokes
     if (lastOperation === 'divide'){
         total = divide(num1,num2);
     } else if (lastOperation === 'multiply'){
@@ -88,7 +97,7 @@ const evaluate = function(num1, num2, lastOperation){
     } else if (lastOperation === 'subtract'){
         total = subtract(num1, num2);
     }
-    return total;
+   return format(total);
 }
 
 const equals = function(){
@@ -96,34 +105,70 @@ const equals = function(){
     if (!(noNewNumber || lastOperation === '')){
         num2 = Number(document.getElementById('display').textContent);
         total = evaluate(num1, num2, lastOperation);
+        total = format(total);
         document.getElementById('display').textContent = total;
         num1 = total;
         lastOperation = '';
     }
 }
 
-const plusMinus = function(){
+const special = function(specialOperation){
     let num = Number(document.getElementById('display').textContent);
     if (!isNaN(num)){
-        num1 = num * -1;
-        document.getElementById('display').textContent = num1;
-    }
-}
-
-const sqrt = function(){
-    let num = Number(document.getElementById('display').textContent);
-    if (!isNaN(num)){
-        if (num < 0){
-            document.getElementById('display').textContent = 'Why?';
-        } else {
-            num1 = Math.sqrt(num);
-            document.getElementById('display').textContent = num1;
+        if (specialOperation === 'plusMinus'){
+            num *= -1;
+        } else if (specialOperation === 'sqrt' && num > 0){
+            num = Math.sqrt(num);
+        } else if (specialOperation === 'percent'){
+            num = num / 100;
+        } else if (specialOperation === 'memMinus'){
+            memory -= num;
+            return;
+        } else if (specialOperation === 'memPlus'){
+            memory += num;
+            return;
         }
     }
+    if (specialOperation === 'recall'){
+        num = memory;
+        noNewNumber = false;
+    }
+    num = format(num);
+    document.getElementById('display').textContent = num;
+    specialClicked = true;
 }
 
-
-
+const format = function(num){
+    // Check if number too many digits big or small
+    // If includes decimal -> cut off at 10 digits
+    num = String(num);
+    if (!num.includes('-')){
+        if (num.includes('.')){
+            num = num.slice(0,10);
+        } else if (num.length > 10){
+            num = 'Too Big';
+            formatError = true;
+        }
+    } else if (num.includes('-')){
+        if (num.includes('.')){
+            num = num.slice(0,11);
+        } else if (num.length > 11){
+            num = 'Too Small';
+            formatError = true;
+        }
+    }
+    if (isNaN(Number(num))){
+        return num;
+    }
+    if (!formatError){
+        num = Number(num);
+    }
+    /*else {
+        total = format(total);
+        return total;
+    }*/
+    return num;
+}
 
 // Go through each number button and display on the display
 numbers = document.querySelectorAll('.number');
@@ -138,5 +183,12 @@ operations = document.querySelectorAll('.function');
 operations.forEach(operation => {
     operation.addEventListener('click', () => {
         operate(operation.value);
+    });
+});
+
+specialOperations = document.querySelectorAll('.special');
+specialOperations.forEach(specialOperation => {
+    specialOperation.addEventListener('click', () => {
+        special(specialOperation.value);
     });
 });
