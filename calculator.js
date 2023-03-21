@@ -50,7 +50,7 @@ const clearEntry = function(){
 
 const divide = function(num1, num2){
     if (num2 === 0){
-        let answers = ["Can't do that", "Please No", "Aaaaa!"];
+        let answers = ["No Way", "Please No", "Aaaaa!"];
         noNewNumber = true;
         return answers[Math.floor(Math.random()*answers.length)];
     } else {
@@ -72,7 +72,12 @@ const add = function(num1, num2){
 
 const operate = function(currentOperation){
     // Check to see if an operation has occured
+    // Can only happen if the number is a number
     let total = 0;
+    let num = Number(document.getElementById('display').textContent);
+    if (isNaN(num)){
+        return;
+    }
     if (lastOperation === '' || noNewNumber ){
         num1 = Number(document.getElementById('display').textContent);
     } else {
