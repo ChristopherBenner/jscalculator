@@ -139,6 +139,9 @@ const special = function(specialOperation){
         num = memory;
         noNewNumber = false;
     }
+    if (isNaN(num)){
+        return;
+    }
     num = format(num);
     document.getElementById('display').textContent = num;
     specialClicked = true;
