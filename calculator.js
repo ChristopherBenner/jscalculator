@@ -109,6 +109,7 @@ const equals = function(){
         document.getElementById('display').textContent = total;
         num1 = total;
         lastOperation = '';
+        enterClicked = true;
     }
 }
 
@@ -163,10 +164,6 @@ const format = function(num){
     if (!formatError){
         num = Number(num);
     }
-    /*else {
-        total = format(total);
-        return total;
-    }*/
     return num;
 }
 
@@ -192,3 +189,60 @@ specialOperations.forEach(specialOperation => {
         special(specialOperation.value);
     });
 });
+
+// Takes the numbers 0-9, +-*/.= 
+window.onload = function(){
+    const digits = {
+        // The numbers 0-9
+        '48':0,
+        '49':1,
+        '50':2,
+        '51':3,
+        '52':4,
+        '53':5,
+        '54':6,
+        '55':7,
+        '56':8,
+        '57':9,
+        '190':'.',
+        // The numbers 0-9 on the number pad
+        '96':0,
+        '97':1,
+        '98':2,
+        '99':3,
+        '100':4,
+        '101':5,
+        '102':6,
+        '103':7,
+        '104':8,
+        '105':9,
+    };
+    const digitKeys = Object.keys(digits);
+    const operators = {
+        '56':'multiply', // eight + shift
+        '187':'add', // equal + shift
+        '189':'subtract',
+        '191':'divide', // The following are on the number pad
+        '106':'multiply',
+        '107':'add',
+        '109':'subtract',
+        '111':'divide',
+    };
+    const operatorsKeys = Object.keys(operators);
+    const equal = '187';
+    window.onkeydown = function(key){
+        let code = String(key.keyCode);
+        console.log(code);
+        if (key.shiftKey && operatorsKeys.includes(code)){
+            operate(operators[code]); 
+        }
+        else if (code === equal){
+            equals();
+        }
+        else if (digitKeys.includes(code)){
+            displayDigit(digits[code]);
+        } else if (operatorsKeys.includes(code)){
+            operate(operators[code]);
+        } 
+    }
+}
