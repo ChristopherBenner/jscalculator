@@ -232,7 +232,6 @@ window.onload = function(){
     const equal = '187';
     window.onkeydown = function(key){
         let code = String(key.keyCode);
-        console.log(code);
         if (key.shiftKey && operatorsKeys.includes(code)){
             operate(operators[code]); 
         }
